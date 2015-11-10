@@ -26,7 +26,7 @@
             android:exported="false"
             android:label="StartUserInitReceiver">
             <intent-filter>
-                <action android:name="android.intent.action._BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
     </application>
