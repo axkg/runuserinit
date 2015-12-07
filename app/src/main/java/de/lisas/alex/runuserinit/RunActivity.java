@@ -29,7 +29,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class RunActivity extends Activity {
 
@@ -48,8 +50,19 @@ public class RunActivity extends Activity {
 
     static void runAsRoot() {
         try {
-            Process process = Runtime.getRuntime().exec(new String[] { "su", "-c", "run-parts /data/local/userinit.d/" });
-            process.waitFor();
+            // Replace run-parts as it's gone with CM13
+            Process lsProcess = Runtime.getRuntime().exec(new String[] { "su", "-c", "ls /data/local/userinit.d/" });
+            BufferedReader reader = new BufferedReader(new InputStreamReader(lsProcess.getInputStream()));
+
+            String initScript;
+            while ((initScript = reader.readLine()) != null) {
+                // You better take care that these scripts daemonize whatever they run
+                Process process = Runtime.getRuntime().exec(new String[] { "su", "-c", "/data/local/userinit.d/" + initScript });
+                process.waitFor();
+            }
+
+            lsProcess.waitFor();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
